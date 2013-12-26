@@ -1,0 +1,44 @@
+package Phoenix_Boss
+
+import TimerUtils
+import Phoenix_Model
+import Phoenix_AI_Model
+
+Phoenix_Model boss = new Phoenix_Model(udg_JUGBOSS)
+Phoenix_AI_Model bossAI = new Phoenix_AI_Model(boss)
+
+function phaseOneActions()
+	boss.setPhase(1)
+	
+function phaseTwoActions()
+	boss.setPhase(2)
+	
+function phaseThreeActions()
+	boss.setPhase(3)
+
+function attackHeroPeriodically()
+	bossAI.attackTarget(udg_Heroe)
+
+init
+	trigger phaseOne = CreateTrigger()
+	trigger phaseTwo = CreateTrigger()
+	trigger phaseThree = CreateTrigger()
+	
+	unit boss = boss.getUnit()
+	
+	phaseOne.registerUnitStateEvent(boss, UNIT_STATE_LIFE, LESS_THAN, 500)
+	phaseOne.addAction(function phaseOneActions)
+	
+	phaseTwo.registerUnitStateEvent(boss, UNIT_STATE_LIFE, LESS_THAN, 300)
+	phaseTwo.addAction(function phaseTwoActions)
+	
+	phaseThree.registerUnitStateEvent(boss, UNIT_STATE_LIFE, LESS_THAN, 100)
+	phaseThree.addAction(function phaseThreeActions)
+
+	TimerStart(getTimer(), 5, true, function attackHeroPeriodically)
+	
+	phaseOne = null
+	phaseTwo = null
+	phaseThree = null
+	
+	boss = null

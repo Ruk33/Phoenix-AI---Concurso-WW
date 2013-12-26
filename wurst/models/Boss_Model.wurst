@@ -1,0 +1,20 @@
+package Boss_Model
+
+public abstract class Boss_Model
+	/**
+	 * Unidad que hace de boss
+	 */
+	protected unit boss
+	
+	/**
+	 * Obtenemos la unidad que hace de boss
+	 */
+	function getUnit() returns unit
+		return this.boss
+	
+	construct(player owner, int rawcode)
+		this.boss = CreateUnit(owner, rawcode, 0, 0, 0)
+	
+	ondestroy
+		this.boss.kill()
+		this.boss = null

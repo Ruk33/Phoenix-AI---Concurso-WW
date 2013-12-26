@@ -1,0 +1,12 @@
+package Phoenix_Model
+
+import public Boss_Model
+
+public class Phoenix_Model extends Boss_Model
+	protected static int RAW_CODE = 'h002'
+	
+	function castSomeSpell()
+		BJDebugMsg("casting")
+		
+	construct(player owner)
+		super(owner, RAW_CODE)
