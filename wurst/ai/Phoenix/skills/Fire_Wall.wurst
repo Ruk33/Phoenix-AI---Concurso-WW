@@ -1,0 +1,64 @@
+package Fire_Wall
+
+import Knockback
+import TimedLoop
+
+public constant real fire_Wall_CASTING_TIME = 0.5
+
+class Fire_Wall
+	use TimedLoop
+	
+	private player casterOwner
+	private unit caster
+	private unit dummy
+	private real duration
+	
+	ondestroy
+		this.casterOwner = null
+		this.caster = null
+		
+		this.dummy.kill()
+		this.dummy = null
+	
+	override function onTimedLoop()
+		this.duration -= PERIOD
+	
+		GroupEnumUnitsInRange(bj_lastCreatedGroup, this.dummy.getX(), this.dummy.getY(), 300, null)
+		
+		for unit enumUnit from bj_lastCreatedGroup
+			if ( IsUnitEnemy(enumUnit, this.casterOwner) )
+				UnitDamageTarget(this.caster, enumUnit, 4, true, false, ATTACK_TYPE_MAGIC, DAMAGE_TYPE_FIRE, null)
+				
+		if ( this.duration <= 0 )
+			this.stopTimedLoop()
+	
+	construct(unit caster, location point)
+		location casterLoc = GetUnitLoc(caster)
+		real a = AngleBetweenPoints(casterLoc, point)
+		
+		this.casterOwner = caster.getOwner()
+		this.caster = caster
+		this.dummy = CreateUnitAtLoc(this.casterOwner, 'h004', casterLoc, a)
+		this.duration = 3
+		
+		new Knockback(caster, this.dummy, 800, 3, a)
+		
+		this.startTimedLoop()
+		
+		RemoveLocation(casterLoc)
+		casterLoc = null
+
+function onCast()
+	if ( GetSpellAbilityId() == 'A003' )
+		location castPoint = GetSpellTargetLoc()
+		new Fire_Wall(GetTriggerUnit(), castPoint)
+		RemoveLocation(castPoint)
+		castPoint = null
+
+init
+	trigger onCast = CreateTrigger()
+	
+	onCast.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+	onCast.addAction(function onCast)
+	
+	onCast = null

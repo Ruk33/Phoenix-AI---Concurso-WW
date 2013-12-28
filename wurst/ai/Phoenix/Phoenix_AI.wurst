@@ -1,0 +1,234 @@
+package Phoenix_AI
+
+import TimedLoop
+import LinkedList
+import Fire_Wings
+import Fire_Ground
+import Fire_Wall
+import public AI
+
+/**
+ * Mensajes del boss
+ */
+string array messages
+LinkedList<Phoenix_AI> bosses = new LinkedList<Phoenix_AI>
+
+public class Phoenix_AI extends AI
+	/**
+	 * El tiempo en el que corremos
+	 * acciones (en segundos)
+	 *
+	 * @default 2
+	 */
+	private real timeout = 2
+	
+	/**
+	 * Auxiliar
+	 */
+	private real currentTimeOut = 0
+	
+	/**
+	 * Auxiliar
+	 * Si orderFlag == 0, significa
+	 * que podemos spamear orden de ataque
+	 */
+	private real orderFlag = 0.
+	
+	/**
+	 * Auxiliar para bosses (variable global)
+	 */
+	private int linkedListIndex
+	
+	use TimedLoop
+	
+	ondestroy
+		this.boss = null
+		this.target = null
+		
+		bosses.removeAt(this.linkedListIndex)
+	
+	override function onTargetChanges()
+		this.attackTarget()
+		BJDebugMsg("¡Tu serás mi nuevo objetivo!")
+		
+	/**
+	 * Usar habilidad Fire Wings
+	 */
+	function useFireWings(real x, real y, boolean showText) returns boolean
+		if ( IssuePointOrder(this.boss, "shockwave", x, y) )
+			this.orderFlag += fire_Wings_CASTING_TIME
+			if ( showText )
+				BJDebugMsg("¡Mis alas lo cubriran todo!")
+			return true
+			
+		return false
+		
+	/**
+	 * Usar habilidad Fire Ground
+	 */
+	function useFireGround(boolean showText) returns boolean
+		if ( IssueImmediateOrder(this.boss, "berserk") )
+			this.orderFlag += fire_Ground_CASTING_TIME
+			if ( showText )
+				BJDebugMsg("Siente el ardor de mis alas")
+			return true
+			
+		return false
+	
+	/**
+	 * Usar habilidad Fire Wall
+	 */
+	function useFireWall(boolean showText) returns boolean		
+		if ( IssueTargetOrder(this.boss, "carrionswarm", this.target) )
+			this.orderFlag += fire_Wall_CASTING_TIME
+			if ( showText )
+				BJDebugMsg("¡Recibe el fuego purificador!")
+			return true
+			
+		return false
+		
+	/**
+	 * Distancia entre el boss y el objetivo
+	 */
+	function distanceFromTarget() returns real
+		location bossLoc = GetUnitLoc(this.boss)
+		location targetLoc = GetUnitLoc(this.target)
+		real distance = DistanceBetweenPoints(bossLoc, targetLoc)
+		
+		RemoveLocation(bossLoc)
+		RemoveLocation(targetLoc)
+		
+		bossLoc = null
+		targetLoc = null
+		
+		return distance
+	
+	/**
+	 * Funcion que se ejecuta cuando el boss muere
+	 */	
+	function onBossDied()
+		BJDebugMsg("¿Como puede ser esto posible?")
+	
+	override function onTimedLoop()
+		this.currentTimeOut += PERIOD
+		
+		if ( this.orderFlag > 0 )
+			this.orderFlag -= PERIOD
+			
+		if ( this.orderFlag < 0 )
+			this.orderFlag = 0
+				
+		if ( this.timeout <= this.currentTimeOut )
+			this.currentTimeOut = 0
+			
+			// Verificamos si el boss no estiro la pata
+			//if ( IsUnitType(this.boss, UNIT_TYPE_DEAD) )
+				// El boss ya murio, paramos todo
+				//this.onBossDied()
+				//this.stopTimedLoop()
+			
+			// Si no tenemos objetivo o el mismo murio
+			if ( this.target == null or IsUnitType(this.target, UNIT_TYPE_DEAD) )
+				// Tratamos de conseguir uno nuevo
+				this.setTargetToWeaker(1200)
+			
+			// Evitamos acciones innecesarias si no tenemos objetivo
+			if ( this.target != null )
+				// Si hay mas de 1 unidad cerca del boss
+				if ( this.countEnemiesArround(600, this.boss.getX(), this.boss.getY()) >= 2 )
+					// Obtenemos la unidad mas debil
+					this.setTargetToWeaker(600)
+					
+					// Como hay varias unidades cerca, vamos a hacer
+					// que el boss tenga un 35% de correr a una
+					// locacion mas ventajoza
+					if ( GetRandomInt(0, 100) <= 35 )
+						// Buscamos un mejor lugar para el boss
+						int waypointIndex = this.getConvenientLocation(400)
+						
+						// Verificamos si encontramos un mejor lugar
+						if ( waypointIndex != -1 )
+							// Nos movemos al nuevo lugar!
+							location waypoint = this.getLocationFromIndex(waypointIndex)
+							this.useFireWings(GetLocationX(waypoint), GetLocationY(waypoint), true)
+							waypoint = null
+				
+				real distanceFromTarget = this.distanceFromTarget()
+				
+				if ( GetRandomInt(0, 100) <= 70 and distanceFromTarget < 700 )
+					this.useFireGround(true)
+					
+				if ( distanceFromTarget > 750 )
+					this.useFireWall(false)
+				
+				if ( this.orderFlag == 0. )
+					this.attackTarget()
+	
+	construct(player owner)	
+		this.boss = CreateUnit(owner, 'h002', 0, 0, 0)
+		this.target = null
+		
+		bosses.add(this)
+		this.linkedListIndex = bosses.getSize() - 1
+		
+		this.createWaypoints(5)
+		this.startTimedLoop()
+
+function getClosestBossFromLocation(location loc) returns Phoenix_AI
+	location bossLoc
+	real distance = 999999
+	real tmpDistance
+	int index = -1
+	int i = bosses.getSize() - 1
+	unit boss
+	
+	while ( i > -1 )
+		boss = bosses.get(i).getBoss()
+		
+		bossLoc = Location(GetUnitX(boss), GetUnitY(boss))
+		tmpDistance = DistanceBetweenPoints(loc, bossLoc)
+		
+		RemoveLocation(bossLoc)
+		
+		if ( tmpDistance < distance )
+			distance = tmpDistance
+			index = i
+			
+		i--
+	
+	bossLoc = null
+	boss = null
+	
+	return bosses.get(index)
+	
+
+function onCast()
+	if ( GetUnitTypeId(GetTriggerUnit()) != 'h000' )
+		location spellCastLoc = GetSpellTargetLoc()
+		Phoenix_AI phoenix = getClosestBossFromLocation(spellCastLoc)
+		
+		if ( phoenix != null )
+			location farWaypoint = phoenix.getLocationFromIndex(phoenix.getFarWaypointIndex(spellCastLoc))
+			real x = GetLocationX(farWaypoint)
+			real y = GetLocationY(farWaypoint)
+			
+			if ( phoenix.useFireWings(x, y, false) == false )
+				IssuePointOrder(phoenix.getBoss(), "move", x, y)
+			
+			farWaypoint = null
+			
+		RemoveLocation(spellCastLoc)	
+		spellCastLoc = null
+
+init
+	messages[1] = "¡El fuego de mis alas acabará contigo!"
+	messages[2] = "Nunca moriré, ¡soy inmortal!"
+	messages[3] = "Eres fuerte pero, ¡nunca podrás apagar mis llamas!"
+	messages[4] = "El fuego es mi aliado, el fuego me protege"
+	
+	trigger onCast = CreateTrigger()
+	
+	onCast.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+	onCast.addAction(function onCast)
+	
+	onCast = null

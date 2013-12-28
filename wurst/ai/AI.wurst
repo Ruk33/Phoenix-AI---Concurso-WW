@@ -1,0 +1,202 @@
+package AI
+
+import LinkedList
+
+public abstract class AI
+	/**
+	 * Unidad que hace de boss
+	 */
+	protected unit boss
+	
+	/**
+	 * Objetivo del boss
+	 */
+	protected unit target
+	
+	/**
+	 * Locaciones que vamos a crear
+	 * en todo el mapa. Las mismas
+	 * seran utiles cuando haya que
+	 * determinar si es conveniente
+	 * moverse a una zona (waypoint)
+	 */
+	protected LinkedList<location> waypoints
+	
+	/**
+	 * Funcion que se ejecuta cuando el objeto cambia
+	 */
+	abstract function onTargetChanges()
+	
+	/**
+	 * Obter unidad que hace de boss
+	 */
+	function getBoss() returns unit
+		return this.boss
+		
+	/**
+	 * Asignamos el objetivo del boss
+	 */
+	function setTarget(unit target)
+		if ( this.target != target and target != null )
+			this.target = target
+			this.onTargetChanges()
+	
+	/**
+	 * Obtener objetivo del boss
+	 */
+	function getTarget() returns unit
+		return this.target
+	
+	/**
+     * Atacar objetivo
+     */
+	function attackTarget()
+		IssueTargetOrder(this.boss, "attack", this.target)
+	
+	/**
+	 * Asignamos el objetivo del boss
+	 * a la unidad mas debil que encuentre
+	 */
+	function setTargetToWeaker(real range)
+		player bossOwner = this.boss.getOwner()
+		real targetHp = this.target.getHP()
+		unit weaker = null
+		real weakerHp = 99999999
+		real enumLife
+		
+		if ( this.target != null or targetHp < 0.406 )
+			targetHp = 99999999			
+		
+		GroupEnumUnitsInRange(bj_lastCreatedGroup, this.boss.getX(), this.boss.getY(), range, null)
+		
+		for unit enumUnit from bj_lastCreatedGroup
+			enumLife = enumUnit.getHP()
+			if ( IsUnitEnemy(enumUnit, bossOwner) and enumLife < targetHp and enumLife < weakerHp and enumLife > 0.405 )
+				weaker = enumUnit
+				weakerHp = enumLife
+		
+		this.setTarget(weaker)
+		
+		bossOwner = null
+		weaker = null
+	
+	/**
+	 * Contar enemigos cercanos a un punto
+	 */
+	function countEnemiesArround(real range, real x, real y) returns int
+		player bossOwner = this.boss.getOwner()
+		int count = 0
+		
+		GroupEnumUnitsInRange(bj_lastCreatedGroup, x, y, range, null)
+		
+		for unit enumUnit from bj_lastCreatedGroup
+			if ( IsUnitEnemy(enumUnit, bossOwner) )
+				count++
+			
+		bossOwner = null
+		
+		return count
+		
+	/**
+	 * Obtenemos location mediante indice del linked list waypoints
+	 */
+	function getLocationFromIndex(int index) returns location
+		return this.waypoints.get(index)
+	
+	/**
+	 * Obtenemos waypoint conveniente (donde no
+	 * hay enemigos).
+	 *
+	 * @return int index Index del LinkedList waypoints o -1 (si es este ultimo significa que no hay waypoint sin enemigos)
+	 */
+	function getConvenientLocation(real radius) returns int
+		// boss location
+		location b = Location(this.boss.getX(), this.boss.getY())
+		// waypoint
+		location w
+		// index
+		int i = this.waypoints.getSize() - 1
+		// indice a devolver
+		int r = -1
+		
+		while ( i > 0 )
+			w = this.waypoints.get(i)
+
+			if ( this.countEnemiesArround(radius, GetLocationX(w), GetLocationY(w)) == 0 and DistanceBetweenPoints(b, w) > radius )
+				r = i
+				break
+				
+			i--
+		
+		RemoveLocation(b)
+		
+		b = null
+		w = null
+		
+		// no podemos devolver directamente
+		// location, porque en caso de no encontrar
+		// tendriamos que devolver null
+		// sadly, null != location
+		return r
+		
+	/**
+	 * Obtenemos el indice del waypoint que este
+	 * mas alejado de una locacion
+	 */
+	function getFarWaypointIndex(location loc) returns int
+		location waypoint
+		real tmpDistance
+		real distance = 0
+		int index = -1
+		int i = this.waypoints.getSize() - 1
+		
+		while ( i > 0 )
+			waypoint = this.waypoints.get(i)
+			tmpDistance = DistanceBetweenPoints(loc, waypoint)
+			if ( tmpDistance > distance )
+				distance = tmpDistance
+				index = i
+			
+			i--
+			
+		waypoint = null
+			
+		return index
+	
+	/**
+	 * Crear waypoints
+	 */
+	function createWaypoints(int amount)
+		/*
+		// angulo
+		real a = 0
+		// hacemos un circulo
+		real sum = 360 / amount
+		// distancia entre waypoints
+		real dis = 500
+		// no podemos modificar directamente amount
+		int i = amount+1
+		
+		this.waypoints = new LinkedList<location>
+		
+		// centro
+		this.waypoints.add(Location(0, 0))
+		
+		// circular
+		while ( i > 0 )
+			this.waypoints.add(Location(dis * Cos(a * bj_DEGTORAD), dis * Sin(a * bj_DEGTORAD)))
+			
+			a += sum
+			i--
+		*/
+		
+		// hard coded para que encaje bien en el mapa de wonder
+		// maldito wonder <.<
+		this.waypoints = new LinkedList<location>
+		
+		this.waypoints.add(Location(-650, -321))
+		this.waypoints.add(Location(35, 330))
+		this.waypoints.add(Location(-20, -220))
+		this.waypoints.add(Location(-650, -321))
+		this.waypoints.add(Location(-25, -925))
+		this.waypoints.add(Location(630, -276))

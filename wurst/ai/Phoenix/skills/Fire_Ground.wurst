@@ -1,0 +1,47 @@
+package Fire_Ground
+
+import Basics
+import Vectors
+import Angle
+import DummyRecycler
+
+public constant real fire_Ground_CASTING_TIME = 0.1
+
+function onCast()
+	if ( GetSpellAbilityId() == 'A002' )
+		unit caster = GetTriggerUnit()
+		real casterX = GetUnitX(caster)
+		real casterY = GetUnitY(caster)
+		int i = 8
+		angle a
+		vec2 castingPoint
+		unit dummy
+		player p = GetOwningPlayer(caster)
+		
+		while ( i > 0 )
+			a = angle(GetRandomReal(0, 360))
+			castingPoint = vec2(casterX + GetRandomReal(-500, 500) * Cos(a.radians), casterY + GetRandomReal(-500, 500) * Sin(a.radians))
+			
+			dummy = newDummy(castingPoint, a)
+			dummy.unpause()
+			dummy.setOwner(p, false)
+			dummy.addAbility('A001')
+			
+			dummy.issuePointOrder("flamestrike", castingPoint)
+			
+			recycleDummyDelayed(dummy, 3)
+			
+			i--
+			
+		caster = null
+		dummy = null
+		p = null
+		
+
+init
+	trigger onCast = CreateTrigger()
+	
+	onCast.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+	onCast.addAction(function onCast)
+	
+	onCast = null

@@ -1,0 +1,58 @@
+package Fire_Wings
+
+import TimedLoop
+
+constant int RAW_CODE = 'A000'
+public constant real fire_Wings_CASTING_TIME = 1.
+
+class Fire_Wings
+	use TimedLoop
+	
+	unit caster
+	location spellCastPoint
+	
+	ondestroy
+		this.caster = null
+		
+		RemoveLocation(this.spellCastPoint)
+		this.spellCastPoint = null
+	
+	override function onTimedLoop()
+		location casterLoc = GetUnitLoc(this.caster)
+		real distance = DistanceBetweenPoints(casterLoc, this.spellCastPoint)
+		
+		if ( distance > 100 )
+			real newAngle = AngleBetweenPoints(casterLoc, this.spellCastPoint)
+			location newCasterLoc = PolarProjectionBJ(casterLoc, distance / 30.00, newAngle)
+			
+			this.caster.setFacing(newAngle)
+			SetUnitPositionLoc(this.caster, newCasterLoc)
+			
+			RemoveLocation(newCasterLoc)
+			newCasterLoc = null
+		else
+			this.stopTimedLoop()
+		
+		RemoveLocation(casterLoc)
+		casterLoc = null
+	
+	construct(unit caster, location spellCastPoint)
+		this.caster = caster
+		this.spellCastPoint = spellCastPoint
+		
+		this.startTimedLoop()
+
+function onCast()	
+	if ( GetSpellAbilityId() == RAW_CODE )
+		location castPoint = GetSpellTargetLoc()
+		new Fire_Wings(GetTriggerUnit(), castPoint)
+		RemoveLocation(castPoint)
+		castPoint = null
+
+init
+	trigger onCastTrigger = CreateTrigger()
+	
+	onCastTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+	onCastTrigger.addAction(function onCast)
+	
+	onCastTrigger = null
