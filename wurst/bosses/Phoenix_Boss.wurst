@@ -1,6 +1,5 @@
 package Phoenix_Boss
 
-//import TimerUtils
 import Phoenix_AI
 
 function createBoss()

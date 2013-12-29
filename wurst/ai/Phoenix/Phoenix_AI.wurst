@@ -1,5 +1,6 @@
 package Phoenix_AI
 
+import Vectors
 import TimedLoop
 import LinkedList
 import Fire_Wings
@@ -14,25 +15,23 @@ string array messages
 LinkedList<Phoenix_AI> bosses = new LinkedList<Phoenix_AI>
 
 public class Phoenix_AI extends AI
+	private static real countUnitsTimeOut = 8
+	private static real fireGroundTimeOut = 6
+	private static real fireWallTimeOut = 4
+
 	/**
-	 * El tiempo en el que corremos
-	 * acciones (en segundos)
-	 *
-	 * @default 2
-	 */
-	private real timeout = 2
-	
-	/**
-	 * Auxiliar
-	 */
-	private real currentTimeOut = 0
+	 * Auxiliares
+	 */	
+	private real currentCountUnitsTimeOut = 0
+	private real currentFireGroundTimeOut = 0
+	private real currentFireWallTimeOut = 0
 	
 	/**
 	 * Auxiliar
 	 * Si orderFlag == 0, significa
 	 * que podemos spamear orden de ataque
 	 */
-	private real orderFlag = 0.
+	private real orderFlag
 	
 	/**
 	 * Auxiliar para bosses (variable global)
@@ -55,7 +54,7 @@ public class Phoenix_AI extends AI
 	 * Usar habilidad Fire Wings
 	 */
 	function useFireWings(real x, real y, boolean showText) returns boolean
-		if ( IssuePointOrder(this.boss, "shockwave", x, y) )
+		if ( this.orderFlag == 0. and IssuePointOrder(this.boss, "shockwave", x, y) )
 			this.orderFlag += fire_Wings_CASTING_TIME
 			if ( showText )
 				BJDebugMsg("¡Mis alas lo cubriran todo!")
@@ -67,7 +66,7 @@ public class Phoenix_AI extends AI
 	 * Usar habilidad Fire Ground
 	 */
 	function useFireGround(boolean showText) returns boolean
-		if ( IssueImmediateOrder(this.boss, "berserk") )
+		if ( this.orderFlag == 0. and IssueImmediateOrder(this.boss, "berserk") )
 			this.orderFlag += fire_Ground_CASTING_TIME
 			if ( showText )
 				BJDebugMsg("Siente el ardor de mis alas")
@@ -79,7 +78,7 @@ public class Phoenix_AI extends AI
 	 * Usar habilidad Fire Wall
 	 */
 	function useFireWall(boolean showText) returns boolean		
-		if ( IssueTargetOrder(this.boss, "carrionswarm", this.target) )
+		if ( this.orderFlag == 0. and IssueTargetOrder(this.boss, "carrionswarm", this.target) )
 			this.orderFlag += fire_Wall_CASTING_TIME
 			if ( showText )
 				BJDebugMsg("¡Recibe el fuego purificador!")
@@ -91,17 +90,10 @@ public class Phoenix_AI extends AI
 	 * Distancia entre el boss y el objetivo
 	 */
 	function distanceFromTarget() returns real
-		location bossLoc = GetUnitLoc(this.boss)
-		location targetLoc = GetUnitLoc(this.target)
-		real distance = DistanceBetweenPoints(bossLoc, targetLoc)
+		vec2 bossLoc = vec2(this.boss.getX(), this.boss.getY())
+		vec2 targetLoc = vec2(this.target.getX(), this.boss.getY())
 		
-		RemoveLocation(bossLoc)
-		RemoveLocation(targetLoc)
-		
-		bossLoc = null
-		targetLoc = null
-		
-		return distance
+		return bossLoc.distToVec(targetLoc)
 	
 	/**
 	 * Funcion que se ejecuta cuando el boss muere
@@ -110,30 +102,33 @@ public class Phoenix_AI extends AI
 		BJDebugMsg("¿Como puede ser esto posible?")
 	
 	override function onTimedLoop()
-		this.currentTimeOut += PERIOD
+		this.currentCountUnitsTimeOut += PERIOD
+		this.currentFireGroundTimeOut += PERIOD
+		this.currentFireWallTimeOut += PERIOD
 		
 		if ( this.orderFlag > 0 )
 			this.orderFlag -= PERIOD
 			
 		if ( this.orderFlag < 0 )
 			this.orderFlag = 0
+			
+		// Verificamos si el boss no estiro la pata
+		if ( GetWidgetLife(this.boss) < 0.406 )
+			// El boss ya murio, paramos todo
+			this.onBossDied()
+			this.stopTimedLoop()
+			
+			return
+			
+		// Si no tenemos objetivo o el mismo murio
+		if ( this.target == null or GetWidgetLife(this.target) < 0.406 )
+			// Tratamos de conseguir uno nuevo
+			this.setTargetToWeaker(800)
+		
+		if ( this.target != null )			
+			if ( this.currentCountUnitsTimeOut >= countUnitsTimeOut )
+				this.currentCountUnitsTimeOut = 0
 				
-		if ( this.timeout <= this.currentTimeOut )
-			this.currentTimeOut = 0
-			
-			// Verificamos si el boss no estiro la pata
-			//if ( IsUnitType(this.boss, UNIT_TYPE_DEAD) )
-				// El boss ya murio, paramos todo
-				//this.onBossDied()
-				//this.stopTimedLoop()
-			
-			// Si no tenemos objetivo o el mismo murio
-			if ( this.target == null or IsUnitType(this.target, UNIT_TYPE_DEAD) )
-				// Tratamos de conseguir uno nuevo
-				this.setTargetToWeaker(1200)
-			
-			// Evitamos acciones innecesarias si no tenemos objetivo
-			if ( this.target != null )
 				// Si hay mas de 1 unidad cerca del boss
 				if ( this.countEnemiesArround(600, this.boss.getX(), this.boss.getY()) >= 2 )
 					// Obtenemos la unidad mas debil
@@ -149,24 +144,32 @@ public class Phoenix_AI extends AI
 						// Verificamos si encontramos un mejor lugar
 						if ( waypointIndex != -1 )
 							// Nos movemos al nuevo lugar!
-							location waypoint = this.getLocationFromIndex(waypointIndex)
-							this.useFireWings(GetLocationX(waypoint), GetLocationY(waypoint), true)
-							waypoint = null
-				
-				real distanceFromTarget = this.distanceFromTarget()
-				
-				if ( GetRandomInt(0, 100) <= 70 and distanceFromTarget < 700 )
-					this.useFireGround(true)
+							vec2 waypoint = this.getLocationFromIndex(waypointIndex)
+							
+							if ( this.useFireWings(waypoint.x, waypoint.y, true) )
+								return
+			
+			if ( this.currentFireGroundTimeOut >= fireGroundTimeOut )
+				if ( GetRandomInt(0, 100) <= 70 and this.distanceFromTarget() < 500 )
+					if ( this.useFireGround(true) )
+						this.currentFireGroundTimeOut = 0
+						return
+			
+			if ( this.currentFireWallTimeOut >= fireWallTimeOut )				
+				if ( GetRandomInt(0, 100) <= 40 and this.distanceFromTarget() > 650 )
+					if ( this.useFireWall(false) )
+						this.currentFireWallTimeOut = 0
+						return
 					
-				if ( distanceFromTarget > 750 )
-					this.useFireWall(false)
-				
-				if ( this.orderFlag == 0. )
-					this.attackTarget()
+			if ( this.orderFlag == 0. )
+				this.attackTarget()
 	
-	construct(player owner)	
+	construct(player owner)
+		this.orderFlag = 0
 		this.boss = CreateUnit(owner, 'h002', 0, 0, 0)
 		this.target = null
+		
+		this.setTargetToWeaker(800)
 		
 		bosses.add(this)
 		this.linkedListIndex = bosses.getSize() - 1
@@ -174,8 +177,8 @@ public class Phoenix_AI extends AI
 		this.createWaypoints(5)
 		this.startTimedLoop()
 
-function getClosestBossFromLocation(location loc) returns Phoenix_AI
-	location bossLoc
+function getClosestBossFromLocation(vec2 loc) returns Phoenix_AI
+	vec2 bossLoc
 	real distance = 999999
 	real tmpDistance
 	int index = -1
@@ -185,40 +188,39 @@ function getClosestBossFromLocation(location loc) returns Phoenix_AI
 	while ( i > -1 )
 		boss = bosses.get(i).getBoss()
 		
-		bossLoc = Location(GetUnitX(boss), GetUnitY(boss))
-		tmpDistance = DistanceBetweenPoints(loc, bossLoc)
-		
-		RemoveLocation(bossLoc)
+		bossLoc = vec2(GetUnitX(boss), GetUnitY(boss))
+		tmpDistance = loc.distToVec(bossLoc)
 		
 		if ( tmpDistance < distance )
 			distance = tmpDistance
 			index = i
 			
 		i--
-	
-	bossLoc = null
+		
 	boss = null
 	
 	return bosses.get(index)
 	
+trigger onCastTrigger = CreateTrigger()
+timer disableTriggerTimer = CreateTimer()
+
+function enableTrigger()
+	onCastTrigger.enable()
 
 function onCast()
 	if ( GetUnitTypeId(GetTriggerUnit()) != 'h000' )
-		location spellCastLoc = GetSpellTargetLoc()
-		Phoenix_AI phoenix = getClosestBossFromLocation(spellCastLoc)
+		vec2 castPoint = vec2(GetSpellTargetX(), GetSpellTargetY())
+		Phoenix_AI phoenix = getClosestBossFromLocation(castPoint)
 		
 		if ( phoenix != null )
-			location farWaypoint = phoenix.getLocationFromIndex(phoenix.getFarWaypointIndex(spellCastLoc))
-			real x = GetLocationX(farWaypoint)
-			real y = GetLocationY(farWaypoint)
+			vec2 farWaypoint = phoenix.getLocationFromIndex(phoenix.getFarWaypointIndex(castPoint))
 			
-			if ( phoenix.useFireWings(x, y, false) == false )
-				IssuePointOrder(phoenix.getBoss(), "move", x, y)
-			
-			farWaypoint = null
-			
-		RemoveLocation(spellCastLoc)	
-		spellCastLoc = null
+			if ( phoenix.useFireWings(farWaypoint.x, farWaypoint.y, false) == false )
+				IssuePointOrder(phoenix.getBoss(), "move", farWaypoint.x, farWaypoint.y)
+				
+		//onCastTrigger.disable()
+		//TimerStart(disableTriggerTimer, 10, false, function enableTrigger)
+		
 
 init
 	messages[1] = "¡El fuego de mis alas acabará contigo!"
@@ -226,9 +228,5 @@ init
 	messages[3] = "Eres fuerte pero, ¡nunca podrás apagar mis llamas!"
 	messages[4] = "El fuego es mi aliado, el fuego me protege"
 	
-	trigger onCast = CreateTrigger()
-	
-	onCast.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
-	onCast.addAction(function onCast)
-	
-	onCast = null
+	onCastTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+	onCastTrigger.addAction(function onCast)

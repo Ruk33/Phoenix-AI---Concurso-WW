@@ -1,5 +1,7 @@
 package Fire_Wings
 
+import Vectors
+import Angle
 import TimedLoop
 
 constant int RAW_CODE = 'A000'
@@ -9,45 +11,36 @@ class Fire_Wings
 	use TimedLoop
 	
 	unit caster
-	location spellCastPoint
+	real castX
+	real castY
 	
 	ondestroy
 		this.caster = null
-		
-		RemoveLocation(this.spellCastPoint)
-		this.spellCastPoint = null
 	
 	override function onTimedLoop()
-		location casterLoc = GetUnitLoc(this.caster)
-		real distance = DistanceBetweenPoints(casterLoc, this.spellCastPoint)
+		vec2 casterLoc = vec2(this.caster.getX(), this.caster.getY())
+		vec2 castLoc = vec2(this.castX, this.castY)
+		real distance = castLoc.distToVec(casterLoc)
 		
 		if ( distance > 100 )
-			real newAngle = AngleBetweenPoints(casterLoc, this.spellCastPoint)
-			location newCasterLoc = PolarProjectionBJ(casterLoc, distance / 30.00, newAngle)
+			angle newAngle = casterLoc.angleTo(castLoc)
+			vec2 newLoc = vec2(polarProjectionX(casterLoc.x, distance / 30, newAngle), polarProjectionY(casterLoc.y, distance / 30, newAngle))
 			
 			this.caster.setFacing(newAngle)
-			SetUnitPositionLoc(this.caster, newCasterLoc)
-			
-			RemoveLocation(newCasterLoc)
-			newCasterLoc = null
+			this.caster.setPos(newLoc)
 		else
 			this.stopTimedLoop()
-		
-		RemoveLocation(casterLoc)
-		casterLoc = null
 	
-	construct(unit caster, location spellCastPoint)
+	construct(unit caster, real castX, real castY)
 		this.caster = caster
-		this.spellCastPoint = spellCastPoint
+		this.castX = castX
+		this.castY = castY
 		
 		this.startTimedLoop()
 
 function onCast()	
 	if ( GetSpellAbilityId() == RAW_CODE )
-		location castPoint = GetSpellTargetLoc()
-		new Fire_Wings(GetTriggerUnit(), castPoint)
-		RemoveLocation(castPoint)
-		castPoint = null
+		new Fire_Wings(GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY())
 
 init
 	trigger onCastTrigger = CreateTrigger()

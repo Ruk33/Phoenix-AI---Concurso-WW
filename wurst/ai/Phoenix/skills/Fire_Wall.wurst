@@ -1,5 +1,7 @@
 package Fire_Wall
 
+import Vectors
+import Angle
 import Knockback
 import TimedLoop
 
@@ -32,28 +34,23 @@ class Fire_Wall
 		if ( this.duration <= 0 )
 			this.stopTimedLoop()
 	
-	construct(unit caster, location point)
-		location casterLoc = GetUnitLoc(caster)
-		real a = AngleBetweenPoints(casterLoc, point)
+	construct(unit caster, vec2 point)
+		vec2 casterLoc = vec2(caster.getX(), caster.getY())
+		angle a = casterLoc.angleTo(point)
 		
 		this.casterOwner = caster.getOwner()
 		this.caster = caster
-		this.dummy = CreateUnitAtLoc(this.casterOwner, 'h004', casterLoc, a)
+		this.dummy = createUnit(this.casterOwner, 'h004', casterLoc.toVec3(), a)
 		this.duration = 3
 		
-		new Knockback(caster, this.dummy, 800, 3, a)
+		new Knockback(caster, this.dummy, 800, 3, a.radians())
 		
 		this.startTimedLoop()
-		
-		RemoveLocation(casterLoc)
-		casterLoc = null
 
 function onCast()
 	if ( GetSpellAbilityId() == 'A003' )
-		location castPoint = GetSpellTargetLoc()
+		vec2 castPoint = vec2(GetSpellTargetX(), GetSpellTargetY())
 		new Fire_Wall(GetTriggerUnit(), castPoint)
-		RemoveLocation(castPoint)
-		castPoint = null
 
 init
 	trigger onCast = CreateTrigger()

@@ -1,6 +1,15 @@
 package AI
 
 import LinkedList
+import Vectors
+
+class Vec2Class
+	real x
+	real y
+	
+	construct(real x, real y)
+		this.x = x
+		this.y = y
 
 public abstract class AI
 	/**
@@ -20,7 +29,7 @@ public abstract class AI
 	 * determinar si es conveniente
 	 * moverse a una zona (waypoint)
 	 */
-	protected LinkedList<location> waypoints
+	protected LinkedList<Vec2Class> waypoints
 	
 	/**
 	 * Funcion que se ejecuta cuando el objeto cambia
@@ -59,7 +68,7 @@ public abstract class AI
 	 */
 	function setTargetToWeaker(real range)
 		player bossOwner = this.boss.getOwner()
-		real targetHp = this.target.getHP()
+		real targetHp = GetWidgetLife(this.target)
 		unit weaker = null
 		real weakerHp = 99999999
 		real enumLife
@@ -70,7 +79,7 @@ public abstract class AI
 		GroupEnumUnitsInRange(bj_lastCreatedGroup, this.boss.getX(), this.boss.getY(), range, null)
 		
 		for unit enumUnit from bj_lastCreatedGroup
-			enumLife = enumUnit.getHP()
+			enumLife = GetWidgetLife(enumUnit)
 			if ( IsUnitEnemy(enumUnit, bossOwner) and enumLife < targetHp and enumLife < weakerHp and enumLife > 0.405 )
 				weaker = enumUnit
 				weakerHp = enumLife
@@ -100,8 +109,9 @@ public abstract class AI
 	/**
 	 * Obtenemos location mediante indice del linked list waypoints
 	 */
-	function getLocationFromIndex(int index) returns location
-		return this.waypoints.get(index)
+	function getLocationFromIndex(int index) returns vec2
+		Vec2Class i = this.waypoints.get(index)
+		return vec2(i.x, i.y)
 	
 	/**
 	 * Obtenemos waypoint conveniente (donde no
@@ -111,27 +121,22 @@ public abstract class AI
 	 */
 	function getConvenientLocation(real radius) returns int
 		// boss location
-		location b = Location(this.boss.getX(), this.boss.getY())
+		vec2 b = vec2(this.boss.getX(), this.boss.getY())
 		// waypoint
-		location w
+		vec2 w
 		// index
 		int i = this.waypoints.getSize() - 1
 		// indice a devolver
 		int r = -1
 		
 		while ( i > 0 )
-			w = this.waypoints.get(i)
+			w = this.getLocationFromIndex(i)
 
-			if ( this.countEnemiesArround(radius, GetLocationX(w), GetLocationY(w)) == 0 and DistanceBetweenPoints(b, w) > radius )
+			if ( this.countEnemiesArround(radius, w.x, w.y) == 0 and b.distToVec(w) > radius )
 				r = i
 				break
 				
 			i--
-		
-		RemoveLocation(b)
-		
-		b = null
-		w = null
 		
 		// no podemos devolver directamente
 		// location, porque en caso de no encontrar
@@ -143,23 +148,21 @@ public abstract class AI
 	 * Obtenemos el indice del waypoint que este
 	 * mas alejado de una locacion
 	 */
-	function getFarWaypointIndex(location loc) returns int
-		location waypoint
+	function getFarWaypointIndex(vec2 loc) returns int
+		vec2 waypoint
 		real tmpDistance
 		real distance = 0
 		int index = -1
 		int i = this.waypoints.getSize() - 1
 		
 		while ( i > 0 )
-			waypoint = this.waypoints.get(i)
-			tmpDistance = DistanceBetweenPoints(loc, waypoint)
+			waypoint = this.getLocationFromIndex(i)
+			tmpDistance = loc.distToVec(waypoint)
 			if ( tmpDistance > distance )
 				distance = tmpDistance
 				index = i
 			
 			i--
-			
-		waypoint = null
 			
 		return index
 	
@@ -192,11 +195,11 @@ public abstract class AI
 		
 		// hard coded para que encaje bien en el mapa de wonder
 		// maldito wonder <.<
-		this.waypoints = new LinkedList<location>
+		this.waypoints = new LinkedList<Vec2Class>
 		
-		this.waypoints.add(Location(-650, -321))
-		this.waypoints.add(Location(35, 330))
-		this.waypoints.add(Location(-20, -220))
-		this.waypoints.add(Location(-650, -321))
-		this.waypoints.add(Location(-25, -925))
-		this.waypoints.add(Location(630, -276))
+		this.waypoints.add(new Vec2Class(-650, -321))
+		this.waypoints.add(new Vec2Class(35, 330))
+		this.waypoints.add(new Vec2Class(-20, -220))
+		this.waypoints.add(new Vec2Class(-650, -321))
+		this.waypoints.add(new Vec2Class(-25, -925))
+		this.waypoints.add(new Vec2Class(630, -276))

@@ -12,7 +12,7 @@ function onCast()
 		unit caster = GetTriggerUnit()
 		real casterX = GetUnitX(caster)
 		real casterY = GetUnitY(caster)
-		int i = 8
+		int i = 5
 		angle a
 		vec2 castingPoint
 		unit dummy
@@ -20,7 +20,7 @@ function onCast()
 		
 		while ( i > 0 )
 			a = angle(GetRandomReal(0, 360))
-			castingPoint = vec2(casterX + GetRandomReal(-500, 500) * Cos(a.radians), casterY + GetRandomReal(-500, 500) * Sin(a.radians))
+			castingPoint = vec2(casterX + GetRandomReal(-500, 500) * Cos(a.radians()), casterY + GetRandomReal(-500, 500) * Sin(a.radians()))
 			
 			dummy = newDummy(castingPoint, a)
 			dummy.unpause()
