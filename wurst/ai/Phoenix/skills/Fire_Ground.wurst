@@ -5,37 +5,28 @@ import Vectors
 import Angle
 import DummyRecycler
 
-public constant real fire_Ground_CASTING_TIME = 0.1
+public constant real fire_Ground_CASTING_TIME = 2
+constant int orderId = OrderId("flamestrike")
 
 function onCast()
 	if ( GetSpellAbilityId() == 'A002' )
 		unit caster = GetTriggerUnit()
 		real casterX = GetUnitX(caster)
 		real casterY = GetUnitY(caster)
-		int i = 5
-		angle a
-		vec2 castingPoint
-		unit dummy
-		player p = GetOwningPlayer(caster)
+		vec2 castingPoint = vec2(casterX, casterY)
+		unit dummy = newDummy(castingPoint, angle(0))
 		
-		while ( i > 0 )
-			a = angle(GetRandomReal(0, 360))
-			castingPoint = vec2(casterX + GetRandomReal(-500, 500) * Cos(a.radians()), casterY + GetRandomReal(-500, 500) * Sin(a.radians()))
-			
-			dummy = newDummy(castingPoint, a)
-			dummy.unpause()
-			dummy.setOwner(p, false)
-			dummy.addAbility('A001')
-			
-			dummy.issuePointOrder("flamestrike", castingPoint)
-			
-			recycleDummyDelayed(dummy, 3)
-			
-			i--
+		UnitResetCooldown( dummy )
+		dummy.unpause()
+		dummy.setOwner(GetOwningPlayer(caster), false)
+		dummy.addAbility('A001')
+		
+		dummy.issuePointOrderById(orderId, castingPoint)
+		
+		recycleDummyDelayed(dummy, 3)
 			
 		caster = null
 		dummy = null
-		p = null
 		
 
 init

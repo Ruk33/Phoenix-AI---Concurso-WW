@@ -4,48 +4,50 @@ import Vectors
 import Angle
 import TimedLoop
 
-constant int RAW_CODE = 'A000'
-public constant real fire_Wings_CASTING_TIME = 1.
+public constant real fire_Wings_CASTING_TIME = 3
 
 class Fire_Wings
 	use TimedLoop
 	
 	unit caster
-	real castX
-	real castY
+	vec2 castLoc
+	real distance
+	int iterations
 	
 	ondestroy
+		BJDebugMsg("destroyed")
 		this.caster = null
 	
 	override function onTimedLoop()
-		vec2 casterLoc = vec2(this.caster.getX(), this.caster.getY())
-		vec2 castLoc = vec2(this.castX, this.castY)
-		real distance = castLoc.distToVec(casterLoc)
+		this.iterations--
 		
-		if ( distance > 100 )
-			angle newAngle = casterLoc.angleTo(castLoc)
-			vec2 newLoc = vec2(polarProjectionX(casterLoc.x, distance / 30, newAngle), polarProjectionY(casterLoc.y, distance / 30, newAngle))
+		if ( this.iterations > 0 )
+			vec2 casterLoc = vec2(this.caster.getX(), this.caster.getY())
+			angle newAngle = casterLoc.angleTo(this.castLoc)
+			real su = (this.distance + this.iterations) / 30
+			vec2 newLoc = vec2(casterLoc.x + su * Cos(newAngle.radians()), casterLoc.y + su * Sin(newAngle.radians()))
 			
 			this.caster.setFacing(newAngle)
 			this.caster.setPos(newLoc)
 		else
-			this.stopTimedLoop()
+			this.stopTimedLoopAndDestroy()
 	
 	construct(unit caster, real castX, real castY)
 		this.caster = caster
-		this.castX = castX
-		this.castY = castY
+		this.castLoc = vec2(castX, castY)
+		this.distance = this.castLoc.distToVec(vec2(caster.getX(), caster.getY()))
+		this.iterations = R2I(this.distance / 30)
 		
 		this.startTimedLoop()
 
-function onCast()	
-	if ( GetSpellAbilityId() == RAW_CODE )
+function onCast()
+	if ( GetSpellAbilityId() == 'A000' )
 		new Fire_Wings(GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY())
 
 init
 	trigger onCastTrigger = CreateTrigger()
 	
-	onCastTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
-	onCastTrigger.addAction(function onCast)
+	//onCastTrigger.registerAnyUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT)
+	//onCastTrigger.addAction(function onCast)
 	
 	onCastTrigger = null

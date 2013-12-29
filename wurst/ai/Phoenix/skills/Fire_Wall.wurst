@@ -5,7 +5,7 @@ import Angle
 import Knockback
 import TimedLoop
 
-public constant real fire_Wall_CASTING_TIME = 0.5
+public constant real fire_Wall_CASTING_TIME = 2
 
 class Fire_Wall
 	use TimedLoop
@@ -23,7 +23,7 @@ class Fire_Wall
 		this.dummy = null
 	
 	override function onTimedLoop()
-		this.duration -= PERIOD
+		this.duration -= 0.03125
 	
 		GroupEnumUnitsInRange(bj_lastCreatedGroup, this.dummy.getX(), this.dummy.getY(), 300, null)
 		
@@ -32,7 +32,7 @@ class Fire_Wall
 				UnitDamageTarget(this.caster, enumUnit, 4, true, false, ATTACK_TYPE_MAGIC, DAMAGE_TYPE_FIRE, null)
 				
 		if ( this.duration <= 0 )
-			this.stopTimedLoop()
+			this.stopTimedLoopAndDestroy()
 	
 	construct(unit caster, vec2 point)
 		vec2 casterLoc = vec2(caster.getX(), caster.getY())
@@ -43,7 +43,7 @@ class Fire_Wall
 		this.dummy = createUnit(this.casterOwner, 'h004', casterLoc.toVec3(), a)
 		this.duration = 3
 		
-		new Knockback(caster, this.dummy, 800, 3, a.radians())
+		new Knockback(caster, this.dummy, 800, 3, a)
 		
 		this.startTimedLoop()
 

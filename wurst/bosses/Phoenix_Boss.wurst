@@ -1,6 +1,7 @@
 package Phoenix_Boss
 
 import Phoenix_AI
+import Basics
 
 function createBoss()
 	new Phoenix_AI(udg_JUGBOSS)

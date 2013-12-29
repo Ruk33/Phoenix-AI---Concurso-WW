@@ -1,0 +1,235 @@
+package WurstExportedObjects_w3d
+import ObjEditingNatives
+
+//modifiedTable: 
+
+@compiletime function create_w3d_D000()
+	let u = createObjectDefinition("w3d", 'D000', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Luz")
+	u.setLvlDataString("dfil", 0, 0, "war3mapImported\\Glow.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataInt("duch", 0, 0, 1)
+	u.setLvlDataUnreal("dmas", 0, 0, 4.0)
+	u.setLvlDataInt("dvr1", 1, 0, 100)
+	u.setLvlDataInt("dvg1", 1, 0, 100)
+	u.setLvlDataString("dtil", 0, 0, "*")
+
+
+@compiletime function create_w3d_D001()
+	let u = createObjectDefinition("w3d", 'D001', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Niebla")
+	u.setLvlDataString("dfil", 0, 0, "war3mapImported\\EerieFog.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataInt("duch", 0, 0, 1)
+	u.setLvlDataUnreal("dmas", 0, 0, 4.0)
+
+
+@compiletime function create_w3d_D002()
+	let u = createObjectDefinition("w3d", 'D002', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Escaleras")
+	u.setLvlDataString("dfil", 0, 0, "Doodads\\Terrain\\CliffDoodad\\NagaStairsSmall270\\NagaStairsSmall270.mdl")
+	u.setLvlDataUnreal("dmas", 0, 0, 4.0)
+	u.setLvlDataUnreal("dmis", 0, 0, 0.5)
+	u.setLvlDataInt("dvg1", 1, 0, 150)
+	u.setLvlDataInt("dvr1", 1, 0, 100)
+
+
+@compiletime function create_w3d_D003()
+	let u = createObjectDefinition("w3d", 'D003', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Puente")
+	u.setLvlDataString("dfil", 0, 0, "Doodads\\Terrain\\CityBridgeLarge0\\CityBridgeLarge0.mdl")
+	u.setLvlDataUnreal("dmas", 0, 0, 4.0)
+
+
+@compiletime function create_w3d_D004()
+	let u = createObjectDefinition("w3d", 'D004', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Publico 2")
+	u.setLvlDataString("dfil", 0, 0, "units\\critters\\VillagerMan\\VillagerMan.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataInt("duch", 0, 0, 1)
+
+
+@compiletime function create_w3d_D005()
+	let u = createObjectDefinition("w3d", 'D005', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Publico 3")
+	u.setLvlDataString("dfil", 0, 0, "units\\critters\\VillagerKid\\VillagerKid.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataInt("duch", 0, 0, 1)
+
+
+@compiletime function create_w3d_D006()
+	let u = createObjectDefinition("w3d", 'D006', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Publico 4")
+	u.setLvlDataString("dfil", 0, 0, "units\\critters\\VillagerKid1\\VillagerKid1.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataInt("duch", 0, 0, 1)
+
+
+@compiletime function create_w3d_D007()
+	let u = createObjectDefinition("w3d", 'D007', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Publico 9")
+	u.setLvlDataString("dfil", 0, 0, "units\\critters\\HighElfPeasant\\HighElfPeasant.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataInt("duch", 0, 0, 1)
+
+
+@compiletime function create_w3d_D008()
+	let u = createObjectDefinition("w3d", 'D008', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Publico 5")
+	u.setLvlDataString("dfil", 0, 0, "units\\critters\\VillagerWoman\\VillagerWoman.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataInt("duch", 0, 0, 1)
+	u.setLvlDataUnreal("dmas", 0, 0, 0.93)
+	u.setLvlDataUnreal("dmis", 0, 0, 0.93)
+	u.setLvlDataUnreal("ddes", 0, 0, 0.93)
+
+
+@compiletime function create_w3d_D009()
+	let u = createObjectDefinition("w3d", 'D009', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Publico 10")
+	u.setLvlDataString("dfil", 0, 0, "units\\undead\\Kelthuzad\\Kelthuzad.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataInt("duch", 0, 0, 1)
+	u.setLvlDataUnreal("dmis", 0, 0, 0.85)
+	u.setLvlDataUnreal("dmas", 0, 0, 0.85)
+
+
+@compiletime function create_w3d_D00A()
+	let u = createObjectDefinition("w3d", 'D00A', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Publico 8")
+	u.setLvlDataString("dfil", 0, 0, "units\\critters\\ElfVillagerWoman\\ElfVillagerWoman.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataInt("duch", 0, 0, 1)
+	u.setLvlDataUnreal("dmas", 0, 0, 0.93)
+	u.setLvlDataUnreal("dmis", 0, 0, 0.93)
+	u.setLvlDataUnreal("ddes", 0, 0, 0.93)
+
+
+@compiletime function create_w3d_D00B()
+	let u = createObjectDefinition("w3d", 'D00B', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Publico 7")
+	u.setLvlDataString("dfil", 0, 0, "units\\human\\Sorceress\\Sorceress_V1.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataInt("duch", 0, 0, 1)
+	u.setLvlDataUnreal("dmas", 0, 0, 0.9)
+	u.setLvlDataUnreal("dmis", 0, 0, 0.9)
+	u.setLvlDataUnreal("ddes", 0, 0, 0.9)
+
+
+@compiletime function create_w3d_D00C()
+	let u = createObjectDefinition("w3d", 'D00C', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Publico 6")
+	u.setLvlDataString("dfil", 0, 0, "units\\human\\Peasant\\Peasant.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataInt("duch", 0, 0, 1)
+
+
+@compiletime function create_w3d_D00D()
+	let u = createObjectDefinition("w3d", 'D00D', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Publico 1")
+	u.setLvlDataString("dfil", 0, 0, "units\\critters\\VillagerMan1\\VillagerMan1.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataInt("duch", 0, 0, 1)
+
+
+@compiletime function create_w3d_D00E()
+	let u = createObjectDefinition("w3d", 'D00E', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Publico 11")
+	u.setLvlDataString("dfil", 0, 0, "units\\undead\\Acolyte\\Acolyte.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataInt("duch", 0, 0, 1)
+	u.setLvlDataUnreal("dmas", 0, 0, 0.9)
+	u.setLvlDataUnreal("dmis", 0, 0, 0.9)
+	u.setLvlDataUnreal("ddes", 0, 0, 0.9)
+
+
+@compiletime function create_w3d_D00F()
+	let u = createObjectDefinition("w3d", 'D00F', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Publico 13")
+	u.setLvlDataString("dfil", 0, 0, "units\\human\\Knight\\Knight.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataInt("duch", 0, 0, 1)
+
+
+@compiletime function create_w3d_D00G()
+	let u = createObjectDefinition("w3d", 'D00G', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Publico 12")
+	u.setLvlDataString("dfil", 0, 0, "units\\creeps\\HighElfArcher\\HighElfArcher.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataInt("duch", 0, 0, 1)
+
+
+@compiletime function create_w3d_D00H()
+	let u = createObjectDefinition("w3d", 'D00H', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Sangre 1")
+	u.setLvlDataString("dfil", 0, 0, "war3mapImported\\Blood 1 [Low Quality].mdl")
+	u.setLvlDataInt("duch", 0, 0, 1)
+	u.setLvlDataUnreal("dmis", 0, 0, 0.8)
+	u.setLvlDataUnreal("dmas", 0, 0, 1.2)
+	u.setLvlDataInt("dvg1", 1, 0, 0)
+	u.setLvlDataInt("dvb1", 1, 0, 0)
+	u.setLvlDataInt("dvr1", 1, 0, 200)
+
+
+@compiletime function create_w3d_D00I()
+	let u = createObjectDefinition("w3d", 'D00I', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Sangre 2")
+	u.setLvlDataString("dfil", 0, 0, "war3mapImported\\Blood 2 [Low Quality].mdl")
+	u.setLvlDataInt("duch", 0, 0, 1)
+	u.setLvlDataUnreal("dmis", 0, 0, 0.8)
+	u.setLvlDataUnreal("dmas", 0, 0, 1.2)
+	u.setLvlDataInt("dvb1", 1, 0, 0)
+	u.setLvlDataInt("dvg1", 1, 0, 0)
+	u.setLvlDataInt("dvr1", 1, 0, 200)
+
+
+@compiletime function create_w3d_D00J()
+	let u = createObjectDefinition("w3d", 'D00J', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Sangre 3")
+	u.setLvlDataString("dfil", 0, 0, "war3mapImported\\blood.mdl")
+	u.setLvlDataInt("duch", 0, 0, 1)
+	u.setLvlDataUnreal("dmis", 0, 0, 0.8)
+	u.setLvlDataUnreal("dmas", 0, 0, 1.2)
+	u.setLvlDataInt("dvr1", 1, 0, 100)
+	u.setLvlDataInt("dvg1", 1, 0, 0)
+	u.setLvlDataInt("dvb1", 1, 0, 0)
+
+
+@compiletime function create_w3d_D00K()
+	let u = createObjectDefinition("w3d", 'D00K', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Luz2")
+	u.setLvlDataString("dfil", 0, 0, "war3mapImported\\Glow.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataInt("duch", 0, 0, 1)
+	u.setLvlDataUnreal("dmas", 0, 0, 4.0)
+	u.setLvlDataInt("dvr1", 1, 0, 0)
+	u.setLvlDataInt("dvg1", 1, 0, 25)
+	u.setLvlDataString("dtil", 0, 0, "*")
+	u.setLvlDataInt("dvb1", 1, 0, 200)
+	u.setLvlDataInt("dimc", 0, 0, 1)
+
+
+@compiletime function create_w3d_D00L()
+	let u = createObjectDefinition("w3d", 'D00L', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Edificio 1")
+	u.setLvlDataString("dfil", 0, 0, "Doodads\\Northrend\\Structures\\AncientZiggurat\\AncientZiggurat1.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataUnreal("dmas", 0, 0, 3.0)
+
+
+@compiletime function create_w3d_D00M()
+	let u = createObjectDefinition("w3d", 'D00M', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Edificio 2")
+	u.setLvlDataString("dfil", 0, 0, "buildings\\undead\\Ziggurat\\Ziggurat.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataUnreal("dmas", 0, 0, 3.0)
+
+
+@compiletime function create_w3d_D00N()
+	let u = createObjectDefinition("w3d", 'D00N', 'ZZys')
+	u.setLvlDataString("dnam", 0, 0, "Edificio 3")
+	u.setLvlDataString("dfil", 0, 0, "buildings\\undead\\Necropolis\\Necropolis.mdl")
+	u.setLvlDataInt("dcpr", 0, 0, 0)
+	u.setLvlDataUnreal("dmas", 0, 0, 3.0)
+
+

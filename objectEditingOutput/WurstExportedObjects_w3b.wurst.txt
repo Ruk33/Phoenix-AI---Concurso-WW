@@ -1,0 +1,16 @@
+package WurstExportedObjects_w3b
+import ObjEditingNatives
+
+//modifiedTable: 
+
+@compiletime function create_w3b_B000()
+	let u = createObjectDefinition("w3b", 'B000', 'LTbr')
+	u.setString("bsuf", "Limitador")
+	u.setInt("bgse", 0)
+	u.setString("btar", "decoration,invulnerable")
+	u.setUnreal("bhps", 9999.0)
+	u.setString("bptx", "")
+	u.setString("bfil", "Doodads\\Icecrown\\Props\\SpiderStatue1\\SpiderStatue1.mdl")
+	u.setUnreal("bmis", 0.5)
+
+

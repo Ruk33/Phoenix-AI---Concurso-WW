@@ -1,0 +1,37 @@
+package WurstExportedObjects_w3h
+import ObjEditingNatives
+
+//modifiedTable: 
+
+@compiletime function create_w3h_BB01()
+	let u = createObjectDefinition("w3h", 'BB01', 'BOsf')
+	u.setString("fnam", "Elemental de Fuego")
+	u.setString("ftip", "Elemental de Fuego")
+	u.setString("fart", "ReplaceableTextures\\CommandButtons\\BTNLavaSpawn.blp")
+	u.setString("feat", "Objects\\Spawnmodels\\Human\\FragmentationShards\\FragBoomSpawn.mdl")
+	u.setString("frac", "human")
+
+
+@compiletime function create_w3h_BB00()
+	let u = createObjectDefinition("w3h", 'BB00', 'Bpig')
+	u.setString("fnam", "Glaive")
+	u.setString("ftat", "")
+	u.setString("fsat", "Objects\\Spawnmodels\\Critters\\Albatross\\CritterBloodAlbatross.mdl")
+	u.setString("fnsf", "")
+	u.setString("fta0", "")
+	u.setString("frac", "human")
+
+
+@compiletime function create_w3h_BB04()
+	let u = createObjectDefinition("w3h", 'BB04', 'BIpv')
+	u.setString("fnam", "Furia Vampirica")
+	u.setString("frac", "human")
+	u.setString("ftip", "Furia Vampirica")
+	u.setString("fube", "MosquitoGarrapataSanguijuela")
+	u.setString("fart", "ReplaceableTextures\\CommandButtons\\BTNVampiricAura.blp")
+	u.setString("ftat", "Abilities\\Spells\\Other\\Doom\\DoomTarget.mdl,Abilities\\Spells\\Orc\\Bloodlust\\BloodlustSpecial.mdl")
+	u.setString("fta0", "origin")
+	u.setString("fta1", "hand,right")
+	u.setInt("ftac", 2)
+
+
