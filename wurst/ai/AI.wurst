@@ -32,9 +32,10 @@ public abstract class AI
 	 * Asignamos el objetivo del boss
 	 */
 	function setTarget(unit target)
-		if ( this.target != target and target != null )
+		if ( this.target != target )
 			this.target = target
-			this.onTargetChanges()
+			if ( this.target != null )
+				this.onTargetChanges()
 	
 	/**
 	 * Obtener objetivo del boss
@@ -97,22 +98,23 @@ public abstract class AI
 		while ( enumUnit != null )
 			GroupRemoveUnit(bj_lastCreatedGroup, enumUnit)
 			
-			if ( IsUnitEnemy(enumUnit, bossOwner) )
+			if ( IsUnitEnemy(enumUnit, bossOwner) and IsUnitType(enumUnit, UNIT_TYPE_DEAD) == false )
 				count++
 			
 			enumUnit = FirstOfGroup(bj_lastCreatedGroup)
 			
 		bossOwner = null
 		
-		BJDebugMsg(count.toString())
-		
 		return count
-		
+	
 	/**
 	 * Obtenemos location mediante indice del linked list waypoints
 	 */
 	function getLocationFromIndex(int index) returns vec2
 		return waypoints[index]
+		
+	function getRandomLocation() returns vec2
+		return getLocationFromIndex(GetRandomInt(0, waypointsCount-1))
 	
 	/**
 	 * Obtenemos waypoint conveniente (donde no

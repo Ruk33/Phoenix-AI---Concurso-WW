@@ -2,47 +2,20 @@ package Fire_Wings
 
 import Vectors
 import Angle
-import TimedLoop
+import Knockback
 
-public constant real fire_Wings_CASTING_TIME = 3
-
-class Fire_Wings
-	use TimedLoop
-	
-	unit caster
-	vec2 castLoc
-	real distance
-	int iterations
-	
-	ondestroy
-		BJDebugMsg("destroyed")
-		this.caster = null
-	
-	override function onTimedLoop()
-		this.iterations--
-		
-		if ( this.iterations > 0 )
-			vec2 casterLoc = vec2(this.caster.getX(), this.caster.getY())
-			angle newAngle = casterLoc.angleTo(this.castLoc)
-			real su = (this.distance + this.iterations) / 30
-			vec2 newLoc = vec2(casterLoc.x + su * Cos(newAngle.radians()), casterLoc.y + su * Sin(newAngle.radians()))
-			
-			this.caster.setFacing(newAngle)
-			this.caster.setPos(newLoc)
-		else
-			this.stopTimedLoopAndDestroy()
-	
-	construct(unit caster, real castX, real castY)
-		this.caster = caster
-		this.castLoc = vec2(castX, castY)
-		this.distance = this.castLoc.distToVec(vec2(caster.getX(), caster.getY()))
-		this.iterations = R2I(this.distance / 30)
-		
-		this.startTimedLoop()
+public constant real fire_Wings_CASTING_TIME = 1
 
 function onCast()
 	if ( GetSpellAbilityId() == 'A000' )
-		new Fire_Wings(GetTriggerUnit(), GetSpellTargetX(), GetSpellTargetY())
+		unit caster = GetTriggerUnit()
+		vec2 casterLoc = vec2(caster.getX(), caster.getY())
+		vec2 point = vec2(GetSpellTargetX(), GetSpellTargetY())
+		angle a = casterLoc.angleTo(point)
+		
+		new Knockback(caster, caster, 800, 1.3, a)
+		
+		caster = null
 
 init
 	trigger onCastTrigger = CreateTrigger()

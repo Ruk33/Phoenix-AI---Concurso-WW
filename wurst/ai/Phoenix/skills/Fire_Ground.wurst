@@ -5,7 +5,7 @@ import Vectors
 import Angle
 import DummyRecycler
 
-public constant real fire_Ground_CASTING_TIME = 2
+public constant real fire_Ground_CASTING_TIME = 1
 constant int orderId = OrderId("flamestrike")
 
 function onCast()
